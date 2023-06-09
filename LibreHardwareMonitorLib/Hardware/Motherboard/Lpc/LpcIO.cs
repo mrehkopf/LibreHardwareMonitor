@@ -642,7 +642,7 @@ internal class LpcIO
         // The controller only affects the 2nd ITE chip if present, and only a few
         // models are known to use this controller.
         // IT8795E likely to need this too, but may use different registers.
-        if (motherboard.Manufacturer != Manufacturer.Gigabyte || port.RegisterPort != 0x4E || chip is not (Chip.IT8790E or Chip.IT8792E or Chip.IT87952E))
+        if (motherboard.Manufacturer != Manufacturer.Gigabyte || port.RegisterPort != 0x4E || chip is not (Chip.IT8790E or Chip.IT8792E or Chip.IT87952E /* or Chip.ITE_UNK_0x8883 */))
             return null;
 
         port.Select(IT87XX_SMFI_LDN);
@@ -660,20 +660,20 @@ internal class LpcIO
         uint addressHi = 0;
         uint addressHiVerify = 0;
         uint address = port.ReadWord(IT87_SMFI_HLPC_RAM_BASE_ADDRESS_REGISTER);
-        if (chip == Chip.IT87952E)
+        if (chip is Chip.IT87952E /* or Chip.ITE_UNK_0x8883 */)
             addressHi = port.ReadByte(IT87_SMFI_HLPC_RAM_BASE_ADDRESS_REGISTER_HIGH);
         Thread.Sleep(1);
         uint addressVerify = port.ReadWord(IT87_SMFI_HLPC_RAM_BASE_ADDRESS_REGISTER);
-        if (chip == Chip.IT87952E)
+        if (chip is Chip.IT87952E /* or Chip.ITE_UNK_0x8883 */)
             addressHiVerify = port.ReadByte(IT87_SMFI_HLPC_RAM_BASE_ADDRESS_REGISTER_HIGH);
-
+        
         if ((address != addressVerify) || (addressHi != addressHiVerify))
             return null;
 
         // Address is xryy, Host Address is FFyyx000
         // For IT87952E, Address is rzxryy, Host Address is (0xFC000000 | 0x0zyyx000)
         uint hostAddress;
-        if (chip == Chip.IT87952E)
+        if (chip is Chip.IT87952E /*or Chip.ITE_UNK_0x8883*/)
             hostAddress = 0xFC000000;
         else
             hostAddress = 0xFF000000;
