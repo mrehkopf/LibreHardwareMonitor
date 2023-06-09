@@ -564,6 +564,7 @@ internal class LpcIO
             0x8790 => Chip.IT8790E,
             0x8733 => Chip.IT8792E,
             0x8695 => Chip.IT87952E,
+            0x8833 => Chip.ITE_UNK_0x8883,
             _ => Chip.Unknown
         };
 
